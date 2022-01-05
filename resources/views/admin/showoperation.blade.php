@@ -53,9 +53,7 @@
         					<a class="btn btn-danger" href="{{url('cancelled',$operation->id)}}">Cancel</a>
         				</td>
 
-                <!-- <td>
-                  <a class="btn btn-primary" href="{{url('emailview',$operation->id)}}">Send Mail</a>
-                </td> -->
+                
 
         			</tr>
         			@endforeach
