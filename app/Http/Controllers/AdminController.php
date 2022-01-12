@@ -10,9 +10,7 @@ use App\Models\Appointment;
 
 use App\Models\Operation;
 
-use Notification;
 
-use App\Notifications\SendEmailNotification;
 
 class AdminController extends Controller
 {
@@ -20,16 +18,19 @@ class AdminController extends Controller
     {
     	return view('admin.add_doctor');
     }
-    
+
     public function upload(Request $request)
     {
-    	$doctor = new doctor;
+        $imagename = '';
+        $doctor = new doctor;
 
     	$image= $request->file;
+        if($image)
+        {
+            $imagename=time().'.'.$image->getClientOriginalExtension();
 
-    	$imagename=time().'.'.$image->getClientOriginalExtension();
-
-    	$request->file->move('doctorimage',$imagename);
+            $request->file->move('doctorimage',$imagename);
+        }
 
     	$doctor->image=$imagename;
 
@@ -40,13 +41,13 @@ class AdminController extends Controller
     	$doctor->room=$request->room;
 
 		$doctor->speciality=$request->speciality;
- 
+
  		$doctor ->save();
  		return redirect()->back()->with('message','Doctor Updated succesfully');
 
 
     }
-    
+
     public function showappointment()
     {
         $data=appointment::all();
@@ -92,7 +93,7 @@ class AdminController extends Controller
   public function deletedoctor($id)
     {
 
-        $data = doctor::find($id);      
+        $data = doctor::find($id);
 
         $data->delete();
         return redirect()->back();
@@ -102,7 +103,7 @@ class AdminController extends Controller
     public function updatedoctor($id)
     {
 
-         $data = doctor::find($id); 
+         $data = doctor::find($id);
 
         return view('admin.update_doctor',compact('data'));
     }
@@ -110,8 +111,8 @@ class AdminController extends Controller
     public function editdoctor(Request $request, $id)
     {
 
-         $data = doctor::find($id); 
-         
+         $data = doctor::find($id);
+
         $data->name=$request->name;
 
         $data->phone=$request->phone;
@@ -131,38 +132,12 @@ class AdminController extends Controller
 
         $data->image=$imagename;
         }
-        
+
         $data->save();
         return redirect()->back();
     }
 
-    public function emailview($id)
-    {   
 
-        $data= appointment::find($id);
-        return view ('admin.email_view',compact('data'));
-
-    }
-
-    // public function sendemail(Request $request, $id)
-    // {
-    //      $data= appointment::find($id);
-    //      $details=[
-
-    //         'greeting' => $request->greeting,
-    //         'Time' => $request->body,
-    //         // 'actiontext' => $request->actiontext,
-    //         // 'actionurl' => $request->actionurl,
-    //         'Total Payment' => $request->endpart
-    //      ];
-
-    //       Notification::send($data, new SendEmailNotification($details));
-
-
-    //          return redirect()->back();
-
-
-    // }
 
     public function showoperation()
     {

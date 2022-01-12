@@ -1,0 +1,139 @@
+<?php
+
+namespace Tests\Unit;
+
+use Tests\TestCase;
+
+use App\Providers\RouteServiceProvider;
+
+use \App\Http\Controllers\AdminController;
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Models\Doctor;
+
+use App\Models\Appointment;
+
+use App\Models\Operation;
+
+
+
+
+class AdminController extends TestCase
+{
+    public function test_addview() {
+        $this->data = new AdminController;
+        $response = $this->data->account();
+        $data = user::all();
+        $this->assertEquals($response , view("admin.account", compact('data')));
+    }
+    
+    public function test_uploadfood() {
+        $this->data = new AdminController;
+        $request = new Request(['name' => 'Sample Name',
+        'room' => '222',
+        'phone' => '123445',
+        'speciality' => 'Sample speciality',
+        'image' => NULL,]);
+        $response = $this->data->upload($request);
+        $this->assertTrue(true);
+    }
+    
+    public function test_showappointment() {
+        $this->data = new AdminController;
+        $response = $this->data->showappointment();
+        $data = appointment::all();
+        $this->assertEquals($response , view("admin.showappointment", compact("data")));
+    }
+
+    public function approve($id)
+    {
+
+        $data = appointment::find($id);
+        $data = operation::find($id);
+
+
+        $data->status='Approved';
+
+        $data->save();
+        return redirect()->back();
+
+    }
+
+    public function cancelled($id)
+    {
+
+        $data = appointment::find($id);
+        $data = operation::find($id);
+
+
+        $data->status='Cancelled';
+
+        $data->save();
+        return redirect()->back();
+
+    }
+
+    public function test_showdoctor() {
+        $this->data = new AdminController;
+        $response = $this->data->showdoctor();
+        $data = menu::all()->sortBy('category');
+        $this->assertEquals($response , view("admin.showdoctor", compact("data")));
+    }
+
+    public function test_deletedocotr() {
+        $this->data = new AdminController;
+        $d = user::where('usertype', '0')->inRandomOrder()->limit(1)->get();
+        $response = $this->data->deletedoctor($d[0]->id);
+        $this->assertTrue(true);
+    }
+
+    public function updatedoctor($id)
+    {
+
+         $data = doctor::find($id); 
+
+        return view('admin.update_doctor',compact('data'));
+    }
+
+    public function editdoctor(Request $request, $id)
+    {
+
+         $data = doctor::find($id); 
+         
+        $data->name=$request->name;
+
+        $data->phone=$request->phone;
+
+        $data->speciality=$request->speciality;
+
+        $data->room=$request->room;
+
+        $image = $request->file;
+
+        if($image)
+        {
+
+        $imagename = time().'.'.$image->getClientOriginalExtension();
+
+        $request->file->move('doctorimage', $imagename);
+
+        $data->image=$imagename;
+        }
+        
+        $data->save();
+        return redirect()->back();
+    }
+ 
+   
+
+    public function showoperation()
+    {
+        $data=operation::all();
+
+        return view('admin.showoperation',compact('data'));
+    }
+
+}
